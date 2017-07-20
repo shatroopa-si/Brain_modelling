@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "euclidDistance <- function(point1, point2)\n{\n  ##returns the euclidean distance between 2 points(taken as a vector)\n  \n  total = 0                                 ##accumulator variable\n  \n  for(index in 1:dimension){\n    diff = (point1[index] - point2[index]) ** 2\n    total = total + diff\n  }\n  \n  distance = sqrt(total)\n  \n  return(distance)\n}\n\n\ninitCentroid <- function(dataDict, k)\n{\n  ##randomly chosen data points will form the centroid\n  \n  centroids = list()                #list of points(vector)\n  \n  #generate k unique random integers between 1 & nPoints which will be the index of chosen centroid in dataDict\n  cKeys = sample(1:nPoints, k, replace = F)\n\n  centroidCount = 1\n  while(centroidCount <= k)\n  {\n    centroids[[centroidCount]] = retreivePoint(dataDict, cKeys[centroidCount])\n    centroidCount = centroidCount + 1\n  }\n  \n  return(centroids)\n}\n\n\ncreateClusters <- function(dataDict, k, iterations, centroids, clusteringVector)\n{\n  ##creates k clusters using initial set of centroids, the data dictionary, applying 'iterations' number of repeats\n  # print(\"::::::Initially chosen centroids:::::\")\n  # print(centroids)\n  for(iter in 1:iterations)\n  {\n    #print('*********************PASS**********************')\n    \n    ##initialize k clusters\n    clusters = list()                   #list of matrix (each row is a point in the cluster)\n    for(i in 1:k)\n    {\n      clusters[[i]] = matrix(nrow = 0, ncol = dimension)\n    }\n    \n    ##assign each data point to a cluster corresponding to the centroid it is closest to\n    for(i in 1:nPoints)\n    {\n      point = retreivePoint(dataDict, i)\n      \n      ##calculate distance from each cluster and find the minimum\n      dist = vector(length = k)\n      for(j in 1:k)\n      {\n        dist[j] = euclidDistance(point, centroids[[j]])\n      }\n      minDist = min(dist)\n      \n      ##assign the point to the particular cluster\n      x = which(minDist == dist)[[1]]               #index of the cluster with minimum distance from the point\n      clusters[[x]] = rbind(clusters[[x]], point)\n      clusteringVector[i] <<- x                     #assignment takes place in the global environment\n    }\n    \n    ##recompute centroids(median method for multi-dimensional points) for each of the k clusters \n    for(i in 1:k)\n    {\n      sums = colSums(clusters[[i]])/dim(clusters[[i]])[1]\n      centroids[[i]] <- sums\n    }\n    \n    ##repopulate empty clusters by choosing a random centroid\n    for(i in 1:k)\n    {\n      if(dim(clusters[[i]])[1] == 0)                #no rows in the matrix ====>> empty cluster\n      {\n        centroids[[i]] <- retreivePoint(dataDict, sample(1:nPoints, 1, replace = F))\n      }\n    }\n  }\n  #print(centroids)\n  #return(clusters)\n  return(centroids)\n}",
+    "created" : 1464846685452.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "4246551548",
+    "id" : "53E0E32B",
+    "lastKnownWriteTime" : 1481056643,
+    "last_content_update" : 1481056643424,
+    "path" : "~/Desktop/cHEMICAL lOCHA/imp/brainModelling/kMeans/kMeans.R",
+    "project_path" : "kMeans.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 4,
+    "source_on_save" : true,
+    "source_window" : "",
+    "type" : "r_source"
+}
